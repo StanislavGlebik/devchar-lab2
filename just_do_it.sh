@@ -9,7 +9,15 @@ then
     exit 1
 fi
 
-#sudo insmod ker.ko
+HAVE_MODULE=`grep ker /proc/modules`
+
+if [ "x$HAVE_MODULE" == "x" ];
+then
+    sudo insmod ker.ko
+    echo 'Module is loaded now'
+else
+    echo 'Module is already loaded'
+fi
 
 operation_device_num=`grep operation_device /proc/devices | awk '{print $1}'`
 operand1_device_num=`grep operand1_device /proc/devices | awk '{print $1}'`
@@ -30,9 +38,9 @@ sudo chmod a+r+w /dev/operation
 sudo mknod /dev/result c $result_device_num 1
 sudo chmod a+r+w /dev/result
 
-echo $1 > /dev/operand1
-echo $2 > /dev/operation
-echo $3 > /dev/operand2
+echo "$1" > /dev/operand1
+echo "$2" > /dev/operation
+echo "$3" > /dev/operand2
 
 echo 'Content of operand1:'
 cat /dev/operand1
